@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.18.2",
     "mqtt": "^4.3.7",
-    "node-dht-sensor": "^0.4.3",
-    "express": "^4.18.2"
+    "node-dht-sensor": "^0.4.3"
   }
 }
