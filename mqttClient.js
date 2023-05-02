@@ -7,7 +7,7 @@ const options = {
   password: "password", // 비밀번호
 };
 
-const client = mqtt.connect("mqtt://test.mosquitto.org");
+const client = mqtt.connect("mqtt://3.35.41.124:1883");
 const book = {
   title: "Ego is the Enemy",
   author: "Ryan Holiday",
