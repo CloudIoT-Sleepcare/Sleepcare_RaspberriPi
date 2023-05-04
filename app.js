@@ -33,7 +33,7 @@ const template = {
 //   },
 // };
 var templateSetting = function () {
-  template.time = new Date().toISOString();
+  template.datetime = new Date().toISOString();
   template.humidity = Math.floor(Math.random() * 30);
   template.temperature = Math.floor(Math.random() * 30);
   template.illuminance = Math.floor(Math.random() * 100);
