@@ -7,6 +7,7 @@ const options = {
 
 const client = mqtt.connect(options);
 const template = {
+  userId: "BJRVPH",
   datetime: "",
   temperature: "",
   humidity: "",
@@ -33,10 +34,10 @@ const template = {
 //   },
 // };
 var templateSetting = function () {
-  template.time = new Date().toISOString();
-  template.humidity = Math.floor(Math.random() * 30);
-  template.temperature = Math.floor(Math.random() * 30);
-  template.illuminance = Math.floor(Math.random() * 100);
+  template.datetime = new Date().toISOString();
+  template.humidity = Math.floor(Math.random() * 20) + 10;
+  template.temperature = Math.floor(Math.random() * 50) + 20;
+  template.illuminance = Math.floor(Math.random() * 1023);
 
   // template.humidity = readout.humidity.toFixed(2);
   // template.temperature = readout.temperature.toFixed(2);
