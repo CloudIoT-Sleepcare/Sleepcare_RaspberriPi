@@ -34,7 +34,7 @@ const cds5Pin = new Gpio(17, {
   alert: true,
 });
 
-cds5Pin.on("alert", (level) => {
-  const cds5Value = readMcp3008(adcChannel);
-  console.log("CDS-5 value:", cds5Value);
-});
+setInterval(() => {
+  const cds5Val = readMcp3008(adcChannel);
+  console.log("CDS-5 val: ", cds5Val);
+}, 3000);
