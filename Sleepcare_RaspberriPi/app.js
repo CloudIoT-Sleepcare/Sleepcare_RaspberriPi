@@ -74,6 +74,7 @@ setInterval(() => {
   } else {
     console.warn("Failed to initialize sensor");
   }
+  template.datetime = new Date().toISOString();
   var templateJSON = JSON.stringify(template);
 
   client.publish("test", templateJSON, { qos: 2 });
