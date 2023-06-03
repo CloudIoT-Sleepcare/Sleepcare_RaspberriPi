@@ -115,8 +115,10 @@ setInterval(() => {
   }
   template.datetime = new Date().toISOString();
   var templateJSON = JSON.stringify(template);
-
-  client.publish("test", templateJSON, { qos: 2 }, (err) => {
-    console.log(err);
+  client.connect().then(() => {
+  client.connect().then(() => {
+    client.publish("test", templateJSON, { qos: 2 }, (err) => {
+      console.log(err);
+    });
   });
 }, 3000);
