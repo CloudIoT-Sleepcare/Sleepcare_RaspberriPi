@@ -46,12 +46,13 @@ class IOTClient {
     });
   }
 
-  publish(topic, message, options, callback) {
+  publish(topic, message, options) {
     this.device.publish(topic, message, options, (err) => {
       if (!err) {
         console.log("published successfully: " + topic);
+      } else {
+        console.log(err);
       }
-      callback(err);
     });
   }
 
@@ -115,8 +116,7 @@ setInterval(() => {
   }
   template.datetime = new Date().toISOString();
   var templateJSON = JSON.stringify(template);
-
-  client.publish("test", templateJSON, { qos: 2 }, (err) => {
-    console.log(err);
+  client.connect().then(() => {
+    client.publish("test", templateJSON, { qos: 2 });
   });
 }, 3000);
