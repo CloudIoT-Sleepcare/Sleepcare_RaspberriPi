@@ -1,48 +1,122 @@
-const awsIot = require("aws-iot-device-sdk");
-const fs = require("fs");
+var awsIot = require("aws-iot-device-sdk");
+var sensorLib = require("node-dht-sensor");
+var Spi = require("spi-device");
 
 // AWS IoT Core 연결 정보
 const certPath = "cert/";
 const iotEndpoint = "aw8j5acz8wdeu-ats.iot.ap-northeast-2.amazonaws.com"; // AWS IoT Core 엔드포인트 주소
-const privateKeyPath = certPath + "SleepCare.private.key"; // 라즈베리 파이의 개인 키 경로
-const clientCertificatePath = certPath + "SleepCare.cert.pem"; // 라즈베리 파이의 인증서 경로
+const privateKeyPath = certPath + "Sleepcare.private.key"; // 라즈베리 파이의 개인 키 경로
+const clientCertificatePath = certPath + "Sleepcare.cert.pem"; // 라즈베리 파이의 인증서 경로
 const caCertificatePath = certPath + "root-CA.crt"; // Root CA 인증서 경로
-const clientId = "Hanju Kim"; // 클라이언트 ID (원하는 값으로 변경)
+const clientId = "Sleepcare_RaspberriPi"; // 클라이언트 ID (원하는 값으로 변경)
+class IOTClient {
+  connect() {
+    return new Promise((resolve, reject) => {
+      this.device = awsIot.device({
+        keyPath: privateKeyPath,
+        certPath: clientCertificatePath,
+        caPath: caCertificatePath,
+        clientId: clientId,
+        host: iotEndpoint,
+        region: "ap-northeast-2",
+      });
 
-const privateKeyPath2 = certPath + "private.pem.key"; // 라즈베리 파이의 개인 키 경로
-const clientCertificatePath2 = certPath + "certificate.pem.crt"; // 라즈베리 파이의 인증서 경로
-const caCertificatePath2 = certPath + "AmazonRootCA1.pem"; // Root CA 인증서 경로
+      this.device.on("connect", () => {
+        console.log("Connected to AWS IoT");
+        resolve();
+      });
+      this.device.on("error", (error) => {
+        console.log("error", error);
+      });
+      this.device.on("reconnect", () => {
+        console.log("reconnect");
+      });
+      this.device.on("offline", () => {
+        console.log("offline");
+      });
+    });
+  }
 
-// MQTT 클라이언트 초기화
-const device = awsIot.device({
-  privateKey: fs.readFileSync(privateKeyPath2),
-  clientCert: fs.readFileSync(clientCertificatePath2),
-  caCert: fs.readFileSync(caCertificatePath2),
-  clientId: clientId,
-  host: iotEndpoint,
+  subscribe(topic, options, listenerFunction, caller) {
+    this.device.subscribe(topic, options, () => {
+      console.log("Subscribed: " + topic);
+      this.device.on("message", (topic, payload) => {
+        listenerFunction(topic, payload, caller);
+      });
+    });
+  }
+
+  publish(topic, message, options, callback) {
+    this.device.publish(topic, message, options, (err) => {
+      if (!err) {
+        console.log("published successfully: " + topic);
+      }
+      callback(err);
+    });
+  }
+
+  disconnect() {
+    this.device.end();
+  }
+}
+
+var client = new IOTClient();
+
+const template = {
+  userId: "BJRVPH",
+  datetime: "",
+  temperature: "",
+  humidity: "",
+  illuminance: "",
+};
+
+const mcp3008 = Spi.openSync(0, 0, {
+  mode: Spi.MODE0,
+  maxSpeedHz: 1350000,
 });
+const adcChannel = 0;
+const VCC = 1023;
+function readMcp3008(channel) {
+  const message = [
+    {
+      sendBuffer: Buffer.from([1, (8 + channel) << 4, 0]),
+      receiveBuffer: Buffer.alloc(3),
+      byteLength: 3,
+      speedHz: 1350000,
+    },
+  ];
 
-// MQTT 연결 완료 이벤트 핸들러
-device.on("connect", () => {
-  console.log("Connected to AWS IoT Core");
-  device.subscribe("test", (err, granted) => {
-    err && console.log(err);
-    granted && console.log(granted);
+  mcp3008.transferSync(message);
+
+  const rawValue =
+    ((message[0].receiveBuffer[1] & 3) << 8) + message[0].receiveBuffer[2];
+
+  return (VCC * rawValue) / 1023;
+}
+var sensor = {
+  initialize: function () {
+    return sensorLib.initialize(22, 4);
+  },
+  read: function () {
+    var readout = sensorLib.read();
+    const cds5Val = readMcp3008(adcChannel);
+
+    template.humidity = readout.humidity.toFixed(2);
+    template.temperature = readout.temperature.toFixed(2);
+    template.illuminance = cds5Val;
+  },
+};
+
+setInterval(() => {
+  if (sensor.initialize()) {
+    sensor.read();
+  } else {
+    console.warn("Failed to initialize sensor");
+  }
+  template.datetime = new Date().toISOString();
+  var templateJSON = JSON.stringify(template);
+
+  client.publish("test", templateJSON, { qos: 2 }, (err) => {
+    console.log(err);
   });
-
-  // 메시지 게시
-  const topic = "test"; // 게시할 토픽 (원하는 값으로 변경)
-  const message = "hanju test"; // 보낼 메시지 (원하는 값으로 변경)
-  device.publish(topic, message);
-  console.log("Published message:", message);
-});
-
-// MQTT 연결 에러 이벤트 핸들러
-device.on("error", (error) => {
-  console.error("Error:", error);
-});
-
-// MQTT 연결 끊김 이벤트 핸들러
-device.on("close", () => {
-  console.log("Connection to AWS IoT Core closed");
-});
+}, 3000);
