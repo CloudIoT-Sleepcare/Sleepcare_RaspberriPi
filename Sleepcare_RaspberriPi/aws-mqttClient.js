@@ -64,26 +64,7 @@ var device = awsIot.device({
   region: "ap-northeast-2",
 });
 
-function scheduleFunction() {
-  const now = new Date();
-  const seconds = now.getSeconds();
-
-  if (seconds === 0 || seconds === 30) {
-    executeFunction();
-  }
-
-  // 다음 초에 함수를 실행하기 위해 남은 시간 계산
-  const nextInterval = 30 - (seconds % 30);
-
-  // 다음 실행을 위해 setTimeout으로 함수를 예약
-  setTimeout(scheduleFunction, nextInterval * 1000);
-}
-
 device.on("connect", function () {
-  scheduleFunction();
-});
-
-function executeFunction() {
   setInterval(function () {
     console.log("connected to AWS IoT.");
     if (sensor.initialize()) {
@@ -94,10 +75,9 @@ function executeFunction() {
     template.datetime = new Date().toISOString();
     var templateJSON = JSON.stringify(template);
 
-    device.publish("env", templateJSON);
+    device.publish("test", templateJSON);
     console.log("sent: ", templateJSON);
-  }, 3000);
-}
+  }, 1000);
+});
 
-scheduleFunction();
 console.log("Sensor publisher started.");
