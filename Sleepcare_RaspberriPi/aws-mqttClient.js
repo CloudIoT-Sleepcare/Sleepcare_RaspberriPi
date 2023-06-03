@@ -1,4 +1,5 @@
 const awsIot = require("aws-iot-device-sdk");
+const fs = require("fs");
 
 // AWS IoT Core 연결 정보
 const iotEndpoint = "aw8j5acz8wdeu-ats.iot.ap-northeast-2.amazonaws.com"; // AWS IoT Core 엔드포인트 주소
