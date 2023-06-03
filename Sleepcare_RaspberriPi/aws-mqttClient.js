@@ -5,9 +5,9 @@ var Spi = require("spi-device");
 // AWS IoT Core 연결 정보
 const certPath = "cert/";
 const iotEndpoint = "aw8j5acz8wdeu-ats.iot.ap-northeast-2.amazonaws.com"; // AWS IoT Core 엔드포인트 주소
-const privateKeyPath = certPath + "Sleepcare.private.key"; // 라즈베리 파이의 개인 키 경로
-const clientCertificatePath = certPath + "Sleepcare.cert.pem"; // 라즈베리 파이의 인증서 경로
-const caCertificatePath = certPath + "root-CA.crt"; // Root CA 인증서 경로
+const privateKeyPath = certPath + "Sleepcare.private1.key"; // 라즈베리 파이의 개인 키 경로
+const clientCertificatePath = certPath + "Sleepcare.cert1.pem"; // 라즈베리 파이의 인증서 경로
+const caCertificatePath = certPath + "root-CA1.crt"; // Root CA 인증서 경로
 const clientId = "Sleepcare_RaspberriPi"; // 클라이언트 ID (원하는 값으로 변경)
 class IOTClient {
   connect() {
