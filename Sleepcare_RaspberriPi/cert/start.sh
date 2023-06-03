@@ -24,4 +24,4 @@ fi
 
 # run pub/sub sample app using certificates downloaded in package
 printf "\nRunning pub/sub sample application...\n"
-node aws-iot-device-sdk-js-v2/samples/node/pub_sub/dist/index.js --endpoint aw8j5acz8wdeu-ats.iot.ap-northeast-2.amazonaws.com --key SleepCare.private.key --cert SleepCare.cert.pem --ca_file root-CA.crt --client_id sdk-nodejs-v2 --topic sdk/test/js
+node aws-iot-device-sdk-js-v2/samples/node/pub_sub/dist/index.js --endpoint aw8j5acz8wdeu-ats.iot.ap-northeast-2.amazonaws.com --key Sleepcare.private.key --cert Sleepcare.cert.pem --ca_file root-CA.crt --client_id sdk-nodejs-v2 --topic sdk/test/js
