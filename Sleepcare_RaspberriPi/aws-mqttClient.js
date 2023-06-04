@@ -75,7 +75,7 @@ device.on("connect", function () {
     template.datetime = new Date().toISOString();
     var templateJSON = JSON.stringify(template);
 
-    device.publish("test", templateJSON);
+    device.publish("env", templateJSON);
     console.log("sent: ", templateJSON);
   }, 1000);
 });
