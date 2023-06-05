@@ -79,7 +79,7 @@ device.on("connect", function () {
 
     device.publish("env", templateJSON);
     console.log("sent: ", templateJSON);
-  }, 1000);
+  }, 5 * 60 * 1000);
 });
 
 console.log("Sensor publisher started.");
