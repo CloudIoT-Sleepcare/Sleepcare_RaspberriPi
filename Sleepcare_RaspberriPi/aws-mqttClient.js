@@ -73,7 +73,7 @@ device.on("connect", function () {
       console.warn("Failed to initialize sensor");
     }
     template.datetime = new Date();
-    template.datetime.setUTCHours(date.getUTCHours() + 9);
+    template.datetime.setUTCHours(template.datetime.getUTCHours() + 9);
 
     var templateJSON = JSON.stringify(template);
 
